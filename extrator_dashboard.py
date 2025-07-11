@@ -25,13 +25,12 @@ def extrair_dados_dashboard(navegador: WebDriver) -> dict[str, int | str]:
             except ValueError:
                 continue
 
-    # 🔽 Novo trecho: extrai apenas "Cliques"
-    try:
-        cliques_element = navegador.find_element(By.XPATH, '//div[contains(text(), "Cliques")]/following-sibling::div')
-        cliques_text = cliques_element.text.strip().replace(".", "").replace(",", "")
-        dados["Cliques"] = int(cliques_text)
-    except Exception as e:
-        print("Não foi possível extrair os Cliques:", e)
-        dados["Cliques"] = 0  # ou None, se preferir
+        # Garante que valores faltando sejam 0
+    for campo in ["Registros", "Primeiro depósito"]:
+        if campo not in dados or dados[campo] is None:
+            dados[campo] = 0
+
+    if not dados.get("Depósito"):
+        dados["Depósito"] = "R$ 0,00"
 
     return dados
