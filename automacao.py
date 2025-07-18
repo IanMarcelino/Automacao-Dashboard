@@ -7,8 +7,10 @@ from extrator_dashboard import extrair_dados_dashboard
 from dotenv import load_dotenv
 from notion_utils import get_ultima_data_salva
 from datas_utils import gerar_datas_faltantes
+from notion_save import enviar_para_notion 
 import os
 import time
+
 
 # carrega variáveis do .env
 load_dotenv()
@@ -71,5 +73,12 @@ for data_str in datas_faltantes:
     print(f"Registros: {dados.get('Registros')}")
     print(f"Primeiro Depósito: {dados.get('Primeiro depósito')}")
     print(f"Cliques: {cliques}")
+
+    enviar_para_notion({
+    "Depósito": dados.get("Deposits amount"),
+    "Registros": dados.get("Registrations"),
+    "Primeiro depósito": dados.get("FTDs"),
+    "Cliques": cliques
+}, data_str)
 
     # envio ao Notion 
