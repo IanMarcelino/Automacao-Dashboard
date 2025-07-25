@@ -19,13 +19,28 @@ def enviar_para_notion(dados: dict, data_str: str):
     # Converte a data de "2025/07/16" para "2025-07-16"
     data_iso = data_str.replace("/", "-")
 
-    # Trata valor de depósito: "R$ 2.307,00" → 2307.00
+    # Trata valores do dict 'dados' de string para float e int
     deposito_raw = dados.get("Depósito") or "R$ 0,00"
     deposito_str = deposito_raw.replace("R$", "").replace(".", "").replace(",", ".").strip()
     try:
         deposito_float = float(deposito_str)
     except ValueError:
         deposito_float = 0.0
+        
+    try:
+        registros = int(dados.get("Registros", 0) or 0)
+    except ValueError:
+        registros = 0
+
+    try:
+        ftds = int(dados.get("Primeiro depósito", 0) or 0)
+    except ValueError:
+        ftds = 0
+
+    try:
+        cliques = int(dados.get("Cliques", 0) or 0)
+    except ValueError:
+        cliques = 0
 
     payload = {
         "parent": { "database_id": DATABASE_ID },
@@ -34,16 +49,25 @@ def enviar_para_notion(dados: dict, data_str: str):
                 "date": { "start": data_iso }
             },
             "Deposits amount": {
-                "number": dados.get("Depósito", 0)
+                "number": deposito_float
             },
             "Registrations": {
-                "number": dados.get("Registros", 0)
+                "number": registros
             },
             "FTDs": {
-                "number": dados.get("Primeiro depósito", 0)
+                "number": ftds
             },
             "Visits (unique)": {
-                "number": dados.get("Cliques", 0)
+                "number": cliques
+            },
+            "btag": {
+                "title": [
+                    {
+                        "text": {
+                            "content": "123456"
+                        }
+                    }
+                ]
             }
         }
     }
@@ -56,7 +80,7 @@ def enviar_para_notion(dados: dict, data_str: str):
         print("Payload enviado:", payload)
         response.raise_for_status()
       else:
-        print(f"✅ Dados enviados para Notion com sucesso! ({data_iso})")
+        print(f"Dados enviados para Notion com sucesso! ({data_iso})")
 
     except requests.exceptions.RequestException as e:
       print("\n❌ Exceção na requisição ao Notion:")

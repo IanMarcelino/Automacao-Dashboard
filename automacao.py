@@ -75,10 +75,11 @@ for data_str in datas_faltantes:
     print(f"Cliques: {cliques}")
 
     enviar_para_notion({
-    "Depósito": dados.get("Deposits amount"),
-    "Registros": dados.get("Registrations"),
-    "Primeiro depósito": dados.get("FTDs"),
+    "Depósito": dados.get("Depósito"),
+    "Registros": dados.get("Registros"),
+    "Primeiro depósito": dados.get("Primeiro depósito"),
     "Cliques": cliques
+    
 }, data_str)
 
     # envio ao Notion 
